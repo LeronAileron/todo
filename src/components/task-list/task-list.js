@@ -3,32 +3,44 @@ import Task from "../task";
 
 import './task-list.css';
 
-const TaskList = ({ todos }) => {
-  const elements = todos.map(todo => {
-    const { className, edit, ...todoKeys } = todo;
+export default class TaskList extends React.Component {
+ 
+  render() {
+    const { todos, onMarkCompleted } = this.props;
 
-    if (className === 'editing') {
+    const elements = todos.map(todo => {
+      const { className, id, ...description } = todo;
+
+      if (className === 'editing') {
+        return (
+          <li
+            className={className}
+            key={id}>
+            <Task
+              {...description}
+            />
+            <input type="text" className="edit" defaultValue='Editing task' />
+          </li>
+        )
+      }
+
       return (
-        <li className={className}>
-          <Task {...todoKeys} />
-          <input type="text" className="edit" defaultValue='Editing task' />
+        <li
+          className={ className }
+          key={id}>
+          <Task
+            {...description}
+            // onMarkCompleted={(isCompleted) => this.markCompleted(isCompleted)}
+            onMarkCompleted={(isCompleted) => onMarkCompleted(isCompleted, id)}
+          />
         </li>
       )
-    }
-
+    })
     return (
-      <li className={className}>
-        <Task {...todoKeys} />
-        <input type="text" className="edit" value='Editing task' />
-      </li>
+      <ul className="todo-list">
+        {elements}
+      </ul>
     )
-  })
+  }
 
-  return (
-    <ul className="todo-list">
-      {elements}
-    </ul>
-  )
 }
-
-export default TaskList;

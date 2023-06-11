@@ -2,14 +2,29 @@ import React from "react";
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-const Task = ({ description }) => {
+export default class Task extends React.Component {
+  state = {
+    isCompleted: false,
+  }
 
-  let created = new Date();
-  created = 'created ' + formatDistanceToNow(created, {includeSeconds: true, addSuffix: true});
+  toggleCompleted = () => {
+    this.setState(state => ({isCompleted: !state.isCompleted}));
+    this.props.onMarkCompleted(this.state.isCompleted);
+  }
 
-  return (
+  render() {
+    const { description } = this.props;
+
+    let created = new Date();
+    created = 'created ' + formatDistanceToNow(created, { includeSeconds: true, addSuffix: true });
+
+    return (
       <div className="view">
-        <input className="toggle" type="checkbox" />
+        <input
+          className="toggle"
+          type="checkbox"
+          onClick={this.toggleCompleted}
+        />
         <label>
           <span className="description">{description}</span>
           <span className="created">{created}</span>
@@ -17,7 +32,7 @@ const Task = ({ description }) => {
         <button className="icon icon-edit"></button>
         <button className="icon icon-destroy"></button>
       </div>
-  )
-}
+    )
+  }
 
-export default Task;
+}
