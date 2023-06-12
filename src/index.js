@@ -9,43 +9,63 @@ import Footer from './components/footer';
 
 
 class App extends React.Component {
+  maxId = 100;
+
   state = {
     todos: [
-      { description: 'Completed task', id: 1 },
-      { className: 'editing', description: 'Editing task', id: 2 },
-      { description: 'Active task', id: 3 },
+      this.createTask('Completed task'),
+      this.createTask('Editing task'),
+      this.createTask('Active task'),
+      // { description: 'Completed task', id: 1 },
+      // { className: 'editing', description: 'Editing task', id: 2 },
+      // { description: 'Active task', id: 3 },
     ]
   }
 
-  markCompleted = (isCompleted, id) => {
-    const { todos } = this.state;
-    let i;
-    todos.forEach((todo, idx) => {
-      if (todo.id === id) i = idx;
-    });
+  createTask(description) {
+    return {
+      description,
+      done: false,
+      id: this.maxId++,
+    }
+  }
 
-    const item = todos[i];
-    if (!isCompleted) {
+  toggleCompleted = (done, id) => {
+    const { todos } = this.state;
+
+    const i = todos.findIndex(el => el.id === id);
+    const item = todos[i]
+    console.log('item with index ', i, ' is ', item);
+
+    if (!done) {
       item.className = 'completed';
     } else {
       item.className = null;
     }
 
-    const stateCopy = todos.slice();
+    const stateCopy = JSON.parse(JSON.stringify(todos));
     stateCopy.splice(i, 1, item);
 
     this.setState(stateCopy);
-    this.deleteItem(i);
   }
 
-  deleteItem = (i) => {
-    const arr = this.state.todos;
-    const result = [
-      ...arr.slice(0, i),
-      ...arr.slice(i + 1)
-    ]
-    
-    this.setState({todos: result})
+  deleteItem = id => {
+    this.setState( ({ todos }) => {
+      const i = todos.findIndex(el => el.id === id);
+
+      const newArr = [
+        ...todos.slice(0, i),
+        ...todos.slice(i + 1)
+      ]
+
+      return {
+        todos: newArr
+      }
+    })
+  }
+
+  onToggleDone = id => {
+    console.log('toggle completed', id);
   }
 
   render() {
@@ -58,7 +78,10 @@ class App extends React.Component {
         <section className="main">
           <TaskList
             todos={this.state.todos}
-            onMarkCompleted={(isCompleted, id) => this.markCompleted(isCompleted, id)} />
+            onToggleCompleted={this.toggleCompleted} 
+            onDelete={this.deleteItem}
+            // onToggleDone={this.onToggleDone}
+            />
           <Footer />
         </section>
       </section>

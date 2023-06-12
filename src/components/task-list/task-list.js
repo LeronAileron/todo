@@ -6,7 +6,7 @@ import './task-list.css';
 export default class TaskList extends React.Component {
  
   render() {
-    const { todos, onMarkCompleted } = this.props;
+    const { todos, onToggleCompleted, onDelete, onToggleDone } = this.props;
 
     const elements = todos.map(todo => {
       const { className, id, ...description } = todo;
@@ -30,8 +30,9 @@ export default class TaskList extends React.Component {
           key={id}>
           <Task
             {...description}
-            // onMarkCompleted={(isCompleted) => this.markCompleted(isCompleted)}
-            onMarkCompleted={(isCompleted) => onMarkCompleted(isCompleted, id)}
+            onToggleCompleted={(done) => onToggleCompleted(done, id)}
+            onDelete={() => onDelete(id)}
+            // onToggleDone={() => onToggleDone(id)}
           />
         </li>
       )

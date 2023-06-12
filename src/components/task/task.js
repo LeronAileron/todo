@@ -4,16 +4,16 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 export default class Task extends React.Component {
   state = {
-    isCompleted: false,
+    done: false,
   }
 
   toggleCompleted = () => {
-    this.setState(state => ({isCompleted: !state.isCompleted}));
-    this.props.onMarkCompleted(this.state.isCompleted);
+    this.setState(state => ({done: !state.done}));
+    this.props.onToggleCompleted(this.state.done);
   }
 
   render() {
-    const { description } = this.props;
+    const { description, onDelete, onToggleDone } = this.props;
 
     let created = new Date();
     created = 'created ' + formatDistanceToNow(created, { includeSeconds: true, addSuffix: true });
@@ -30,7 +30,10 @@ export default class Task extends React.Component {
           <span className="created">{created}</span>
         </label>
         <button className="icon icon-edit"></button>
-        <button className="icon icon-destroy"></button>
+        <button 
+          className="icon icon-destroy"
+          onClick={onDelete}>
+        </button>
       </div>
     )
   }
