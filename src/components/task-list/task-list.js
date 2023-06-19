@@ -6,10 +6,14 @@ import './task-list.css';
 export default class TaskList extends React.Component {
  
   render() {
-    const { todos, onToggleCompleted, onDelete, onToggleDone } = this.props;
+    const { todos, onDelete, onToggleDone, filter } = this.props;
 
     const elements = todos.map(todo => {
-      const { className, id, ...description } = todo;
+      let { className, id, done, description } = todo;
+
+      if (done) {
+        className = 'completed';
+      }
 
       if (className === 'editing') {
         return (
@@ -26,20 +30,28 @@ export default class TaskList extends React.Component {
 
       return (
         <li
-          className={ className }
+          className={className}
           key={id}>
           <Task
-            {...description}
-            onToggleCompleted={(done) => onToggleCompleted(done, id)}
+            description={description}
+            checked={done}
             onDelete={() => onDelete(id)}
-            // onToggleDone={() => onToggleDone(id)}
+            onToggleDone={() => onToggleDone(id)}
           />
         </li>
       )
     })
+
+    // почему el.props.className? что это такое? что есть el.props ?
+    const elementsFiltered = elements.filter(el => {
+      if (filter === 'All') return el;
+      if (filter === 'Completed') return el.props.className === 'completed';
+      return el.props.className !== 'completed';
+    })
+    
     return (
       <ul className="todo-list">
-        {elements}
+        {elementsFiltered}
       </ul>
     )
   }

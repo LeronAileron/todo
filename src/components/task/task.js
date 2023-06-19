@@ -3,27 +3,20 @@ import React from "react";
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 export default class Task extends React.Component {
-  state = {
-    done: false,
-  }
-
-  toggleCompleted = () => {
-    this.setState(state => ({done: !state.done}));
-    this.props.onToggleCompleted(this.state.done);
-  }
-
   render() {
-    const { description, onDelete, onToggleDone } = this.props;
+    const { description, onDelete, checked, onToggleDone } = this.props;
 
     let created = new Date();
     created = 'created ' + formatDistanceToNow(created, { includeSeconds: true, addSuffix: true });
 
     return (
-      <div className="view">
+      <div className="view" 
+        onClick={onToggleDone}>
         <input
           className="toggle"
           type="checkbox"
-          onClick={this.toggleCompleted}
+          checked={checked}
+          readOnly
         />
         <label>
           <span className="description">{description}</span>
