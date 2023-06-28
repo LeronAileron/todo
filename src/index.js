@@ -12,29 +12,34 @@ class App extends React.Component {
   maxId = 100;
 
   state = {
+    // todos: [],
     todos: [
-      this.createTask('Completed task'),
-      this.createTask('Editing task'),
-      this.createTask('Active task'),
+      this.createTask('Drink cola'),
+      this.createTask('Eat cheaps'),
+      this.createTask('Complete React'),
     ],
     filter: 'All',
+    editing: 0,
   }
 
   createTask(description) {
+    const date = new Date();
     return {
       description,
       done: false,
       id: this.maxId++,
+      created: date,
     }
   }
 
-  deleteCompleted = (id) => {
-    const {todos} = this.state;
-    const completed =  todos.filter(el => el.done === true);
+  deleteCompleted = () => {
+    const { todos } = this.state;
+    const completed = todos.filter(el => el.done === true);
     completed.forEach(el => this.deleteItem(el.id));
   }
 
-  deleteItem = id => {
+  deleteItem = (id) => {
+    if (this.state.editing) return;
     this.setState(({ todos }) => {
       const i = todos.findIndex(el => el.id === id);
 
@@ -49,30 +54,53 @@ class App extends React.Component {
     })
   }
 
-  onToggleDone = id => {
+  editItem = (id) => {
+    const editCounter = this.state.editing + 1;
+
+    this.setState({
+      editing: editCounter
+    })
+
+    this.setState(({ todos }) => {
+      const i = this.findTodoIdx(id);
+      return this.changeKeyInTodos(i, todos, 'className', 'editing');
+    })
+  }
+
+  editingItem = (id, e) => {
+    this.setState(({ todos }) => {
+      let value = e.target.value;
+      const i = this.findTodoIdx(id);
+      return this.changeKeyInTodos(i, todos, 'description', value);
+    })
+  }
+
+  removeEditClass = (id) => {
+    this.setState({
+      editing: 0
+    })
+
+    this.setState(({ todos }) => {
+      const i = this.findTodoIdx(id);
+      return this.changeKeyInTodos(i, todos, 'className', null)
+    })
+
+  }
+
+  onToggleDone = (id, e) => {
+    if (this.state.editing) return;
+    if (e.target.classList.contains('icon-edit') || e.target.classList.contains('icon-destroy')) return;
     this.setState(({ todos }) => {
       const i = todos.findIndex(el => el.id === id);
-
       const oldItem = todos[i];
-      if (!oldItem) return;
-      const newItem = { ...oldItem, done: !oldItem.done };
-
-      const newArr = [
-        ...todos.slice(0, i),
-        newItem,
-        ...todos.slice(i + 1)
-      ]
-
-      return {
-        todos: newArr
-      }
+      return this.changeKeyInTodos(i, todos, 'done', !oldItem.done);
     })
+
   }
 
   onFilter = name => {
-    this.setState({filter: name})
+    this.setState({ filter: name })
   }
-  
 
   addItem = (input) => {
     const newItem = this.createTask(input);
@@ -89,36 +117,74 @@ class App extends React.Component {
     })
   }
 
+  findTodoIdx(id) {
+    const i = this.state.todos.findIndex(el => el.id === id);
+    return i;
+  }
 
-render() {
-  const { todos, filter } = this.state;
-  const doneCount = todos
-    .filter(el => el.done)
-    .length;
-  const tasksLeft = todos.length - doneCount;
+  changeKeyInTodos(i, todos, keyToChange, newValue) {
+    const oldItem = todos[i];
+    const newItem = { ...oldItem, [keyToChange]: newValue };
+    const newArr = [
+      ...todos.slice(0, i),
+      newItem,
+      ...todos.slice(i + 1)
+    ]
+    return {
+      todos: newArr
+    }
+  }
 
-  return (
-    <section className="todoapp">
-      <header className="header">
-        <h1>todos</h1>
-        <NewTaskForm onTaskAdded={this.addItem} />
-      </header>
-      <section className="main">
-        <TaskList
-          todos={todos}
-          filter={filter}
-          onDelete={this.deleteItem}
-          onToggleDone={this.onToggleDone}
-        />
-        <Footer 
-          left={tasksLeft}
-          onFilter={this.onFilter}
-          onDeleteCompleted={this.deleteCompleted} 
-        />
+  render() {
+    const { todos, filter } = this.state;
+    const doneCount = todos
+                          .filter(el => el.done)
+                          .length;
+    const tasksLeft = todos.length - doneCount;
+
+    window.addEventListener('click', (e) => {
+      let newArr = [];
+      if ( this.state.editing === 2 ||
+          (!e.target.classList.contains('icon-edit') && 
+          !e.target.closest('.editing')) ) {
+
+        newArr = this.state.todos.map(todo => {
+          if (todo.className === 'editing') {
+            todo.className = null;
+          }
+          return todo;
+        })
+      } else return;
+
+      this.setState({editing: 0})
+      this.setState({ todos: newArr })
+    })
+
+    return (
+      <section className="todoapp">
+        <header className="header">
+          <h1>todos</h1>
+          <NewTaskForm onTaskAdded={this.addItem} />
+        </header>
+        <section className="main">
+          <TaskList
+            todos={todos}
+            filter={filter}
+            onDelete={this.deleteItem}
+            onEdit={this.editItem}
+            onToggleDone={this.onToggleDone}
+            onEditing={this.editingItem}
+            removeEditClass={this.removeEditClass}
+          />
+          <Footer
+            left={tasksLeft}
+            onFilter={this.onFilter}
+            onDeleteCompleted={this.deleteCompleted}
+          />
+        </section>
       </section>
-    </section>
-  )
-}
+    )
+  }
 
 }
 

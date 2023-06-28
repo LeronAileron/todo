@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 import './task-filter.css';
 
@@ -9,6 +10,10 @@ export default class TaskFilter extends React.Component {
       { name: 'Active', key: 2 },
       { name: 'Completed', key: 3 },
     ]
+  }
+
+  static propTypes = {
+    onFilter: PropTypes.func.isRequired,
   }
 
   onFilter = (key, name) => {
