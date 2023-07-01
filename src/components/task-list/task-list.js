@@ -32,10 +32,10 @@ export default class TaskList extends React.Component {
     const elements = todos.map((todo) => {
       let {
         className, id, done, description, created,
-      } = todo;
+      } = todo
 
       if (done) {
-        className = 'completed';
+        className = 'completed'
       }
 
       if (className === 'editing') {
