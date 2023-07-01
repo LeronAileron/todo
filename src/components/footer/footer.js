@@ -16,19 +16,10 @@ const Footer = ({ left, onFilter, onDeleteCompleted }) => {
   return (
     <footer className="footer">
       <span className="todo-count">
-        {left}
-        {' '}
-        {item}
-        {' '}
-        left
+        {left} {item} left
       </span>
-      <TaskFilter
-        onFilter={(name) => onFilter(name)}
-      />
-      <button
-        className="clear-completed"
-        onClick={onDeleteCompleted}
-      >
+      <TaskFilter onFilter={(name) => onFilter(name)} />
+      <button className="clear-completed" onClick={onDeleteCompleted}>
         Clear completed
       </button>
     </footer>
