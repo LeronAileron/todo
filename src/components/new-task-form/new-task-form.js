@@ -1,36 +1,37 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import './new-task-form.css';
 
 export default class NewTaskForm extends React.Component {
   state = {
-    value: ""
-  }
+    value: '',
+  };
 
   static propTypes = {
     onTaskAdded: PropTypes.func,
-  }
+  };
 
   onChange = (e) => {
     this.setState({
-      value: e.target.value
-    })
-  }
+      value: e.target.value,
+    });
+  };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
     if (!this.state.value.trim()) return;
     this.props.onTaskAdded(this.state.value);
     this.setState({
-      value: ""
-    })
+      value: '',
+    });
   };
 
   render() {
     return (
       <form onSubmit={this.onSubmit}>
-        <input className="new-todo"
+        <input
+          className="new-todo"
           placeholder="What needs to be done?"
           autoFocus
           onChange={this.onChange}
@@ -38,7 +39,6 @@ export default class NewTaskForm extends React.Component {
         />
       </form>
 
-    )
+    );
   }
-
 }
