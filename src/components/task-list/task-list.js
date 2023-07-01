@@ -20,14 +20,14 @@ export default class TaskList extends React.Component {
   };
 
   onSubmit = (e, id) => {
-    e.preventDefault();
-    this.props.removeEditClass(id);
+    e.preventDefault()
+    this.props.removeEditClass(id)
   };
 
   render() {
     const {
       todos, onDelete, onEdit, onToggleDone, filter, onEditing,
-    } = this.props;
+    } = this.props
 
     const elements = todos.map((todo) => {
       let {
