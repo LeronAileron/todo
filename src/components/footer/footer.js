@@ -1,16 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import TaskFilter from '../tasks-filter';
+import TaskFilter from '../tasks-filter'
 
-import './footer.css';
+import './footer.css'
 
 const Footer = ({ left, onFilter, onDeleteCompleted }) => {
-  let item;
+  let item
   if (left > 1 || left === 0) {
-    item = 'items';
+    item = 'items'
   } else {
-    item = 'item';
+    item = 'item'
   }
 
   return (
@@ -23,13 +23,13 @@ const Footer = ({ left, onFilter, onDeleteCompleted }) => {
         Clear completed
       </button>
     </footer>
-  );
-};
+  )
+}
 
 Footer.propTypes = {
   left: PropTypes.number.isRequired,
   onFilter: PropTypes.func.isRequired,
   onDeleteCompleted: PropTypes.func.isRequired,
-};
+}
 
-export default Footer;
+export default Footer

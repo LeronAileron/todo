@@ -1,160 +1,142 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
+import React from 'react'
+import { createRoot } from 'react-dom/client'
 
-import './index.css';
+import './index.css'
 
-import TaskList from './components/task-list';
-import NewTaskForm from './components/new-task-form';
-import Footer from './components/footer';
+import TaskList from './components/task-list'
+import NewTaskForm from './components/new-task-form'
+import Footer from './components/footer'
 
 class App extends React.Component {
-  maxId = 100;
+  maxId = 100
 
   state = {
     // todos: [],
-    todos: [
-      this.createTask('Drink cola'),
-      this.createTask('Eat cheaps'),
-      this.createTask('Complete React'),
-    ],
+    todos: [this.createTask('Drink cola'), this.createTask('Eat cheaps'), this.createTask('Complete React')],
     filter: 'All',
     editing: 0,
-  };
+  }
 
   createTask(description) {
-    const date = new Date();
+    const date = new Date()
     return {
       description,
       done: false,
       id: this.maxId++,
       created: date,
-    };
+    }
   }
 
   deleteCompleted = () => {
-    const { todos } = this.state;
-    const completed = todos.filter((el) => el.done === true);
-    completed.forEach((el) => this.deleteItem(el.id));
-  };
+    const { todos } = this.state
+    const completed = todos.filter((el) => el.done === true)
+    completed.forEach((el) => this.deleteItem(el.id))
+  }
 
   deleteItem = (id) => {
-    if (this.state.editing) return;
+    if (this.state.editing) return
     this.setState(({ todos }) => {
-      const i = todos.findIndex((el) => el.id === id);
+      const i = todos.findIndex((el) => el.id === id)
 
-      const newArr = [
-        ...todos.slice(0, i),
-        ...todos.slice(i + 1),
-      ];
+      const newArr = [...todos.slice(0, i), ...todos.slice(i + 1)]
 
       return {
         todos: newArr,
-      };
-    });
-  };
+      }
+    })
+  }
 
   editItem = (id) => {
-    const editCounter = this.state.editing + 1;
+    const editCounter = this.state.editing + 1
 
     this.setState({
       editing: editCounter,
-    });
+    })
 
     this.setState(({ todos }) => {
-      const i = this.findTodoIdx(id);
-      return this.changeKeyInTodos(i, todos, 'className', 'editing');
-    });
-  };
+      const i = this.findTodoIdx(id)
+      return this.changeKeyInTodos(i, todos, 'className', 'editing')
+    })
+  }
 
   editingItem = (id, e) => {
     this.setState(({ todos }) => {
-      const { value } = e.target;
-      const i = this.findTodoIdx(id);
-      return this.changeKeyInTodos(i, todos, 'description', value);
-    });
-  };
+      const { value } = e.target
+      const i = this.findTodoIdx(id)
+      return this.changeKeyInTodos(i, todos, 'description', value)
+    })
+  }
 
   removeEditClass = (id) => {
     this.setState({
       editing: 0,
-    });
+    })
 
     this.setState(({ todos }) => {
-      const i = this.findTodoIdx(id);
-      return this.changeKeyInTodos(i, todos, 'className', null);
-    });
-  };
+      const i = this.findTodoIdx(id)
+      return this.changeKeyInTodos(i, todos, 'className', null)
+    })
+  }
 
   onToggleDone = (id, e) => {
-    if (this.state.editing) return;
-    if (e.target.classList.contains('icon-edit') || e.target.classList.contains('icon-destroy')) return;
+    if (this.state.editing) return
+    if (e.target.classList.contains('icon-edit') || e.target.classList.contains('icon-destroy')) return
     this.setState(({ todos }) => {
-      const i = todos.findIndex((el) => el.id === id);
-      const oldItem = todos[i];
-      return this.changeKeyInTodos(i, todos, 'done', !oldItem.done);
-    });
-  };
+      const i = todos.findIndex((el) => el.id === id)
+      const oldItem = todos[i]
+      return this.changeKeyInTodos(i, todos, 'done', !oldItem.done)
+    })
+  }
 
   onFilter = (name) => {
-    this.setState({ filter: name });
-  };
+    this.setState({ filter: name })
+  }
 
   addItem = (input) => {
-    const newItem = this.createTask(input);
+    const newItem = this.createTask(input)
 
     this.setState(({ todos }) => {
-      const newArr = [
-        ...todos,
-        newItem,
-      ];
+      const newArr = [...todos, newItem]
 
       return {
         todos: newArr,
-      };
-    });
-  };
+      }
+    })
+  }
 
   findTodoIdx(id) {
-    const i = this.state.todos.findIndex((el) => el.id === id);
-    return i;
+    const i = this.state.todos.findIndex((el) => el.id === id)
+    return i
   }
 
   changeKeyInTodos(i, todos, keyToChange, newValue) {
-    const oldItem = todos[i];
-    const newItem = { ...oldItem, [keyToChange]: newValue };
-    const newArr = [
-      ...todos.slice(0, i),
-      newItem,
-      ...todos.slice(i + 1),
-    ];
+    const oldItem = todos[i]
+    const newItem = { ...oldItem, [keyToChange]: newValue }
+    const newArr = [...todos.slice(0, i), newItem, ...todos.slice(i + 1)]
     return {
       todos: newArr,
-    };
+    }
   }
 
   render() {
-    const { todos, filter } = this.state;
-    const doneCount = todos
-      .filter((el) => el.done)
-      .length;
-    const tasksLeft = todos.length - doneCount;
+    const { todos, filter } = this.state
+    const doneCount = todos.filter((el) => el.done).length
+    const tasksLeft = todos.length - doneCount
 
     window.addEventListener('click', (e) => {
-      let newArr = [];
-      if (this.state.editing === 2
-          || (!e.target.classList.contains('icon-edit')
-          && !e.target.closest('.editing'))) {
+      let newArr = []
+      if (this.state.editing === 2 || (!e.target.classList.contains('icon-edit') && !e.target.closest('.editing'))) {
         newArr = this.state.todos.map((todo) => {
           if (todo.className === 'editing') {
-            todo.className = null;
+            todo.className = null
           }
-          return todo;
-        });
-      } else return;
+          return todo
+        })
+      } else return
 
-      this.setState({ editing: 0 });
-      this.setState({ todos: newArr });
-    });
+      this.setState({ editing: 0 })
+      this.setState({ todos: newArr })
+    })
 
     return (
       <section className="todoapp">
@@ -172,19 +154,15 @@ class App extends React.Component {
             onEditing={this.editingItem}
             removeEditClass={this.removeEditClass}
           />
-          <Footer
-            left={tasksLeft}
-            onFilter={this.onFilter}
-            onDeleteCompleted={this.deleteCompleted}
-          />
+          <Footer left={tasksLeft} onFilter={this.onFilter} onDeleteCompleted={this.deleteCompleted} />
         </section>
       </section>
-    );
+    )
   }
 }
 
-const elem = <App />;
+const elem = <App />
 
-const rootElement = document.getElementById('root');
-const root = createRoot(rootElement);
-root.render(elem);
+const rootElement = document.getElementById('root')
+const root = createRoot(rootElement)
+root.render(elem)
