@@ -21,26 +21,23 @@ export default class TaskList extends React.Component {
 
   onSubmit = (e, id) => {
     e.preventDefault()
-    const { todos } = this.props
-    const i = todos.findIndex((el) => el.id === id)
-    const editedItem = todos[i]
-    if (!editedItem.description.trim()) return
+    // const { todos } = this.props
+    // const i = todos.findIndex((el) => el.id === id)
+    // const editedItem = todos[i]
+    // if (!editedItem.description.trim()) return
+    if (this.props.dontSubmit) return
     this.props.removeEditClass(id)
   }
 
   render() {
-    const { todos, onDelete, onEdit, onToggleDone, filter, onEditing } = this.props
+    const { todos, onDelete, onEdit, onToggleDone, filter, onEditing, editedId } = this.props
 
     const elements = todos.map((todo) => {
-      let { className, id, done, description, created } = todo
+      let { id, done, description, created } = todo
 
-      if (done) {
-        className = 'completed'
-      }
-
-      if (className === 'editing') {
+      if (editedId === id) {
         return (
-          <li className={className} id={id} key={id}>
+          <li className={'editing'} id={id} key={id}>
             <Task description={description} created={created} />
             <form name="edit-task-form" onSubmit={(e) => this.onSubmit(e, id)}>
               <input
@@ -58,7 +55,8 @@ export default class TaskList extends React.Component {
       }
 
       return (
-        <li className={className} id={id} key={id}>
+        // <li className={className} id={id} key={id}>
+        <li className={done ? 'completed' : null} id={id} key={id}>
           <Task
             description={description}
             checked={done}

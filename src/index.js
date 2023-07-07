@@ -55,11 +55,7 @@ class App extends React.Component {
 
     this.setState({
       editing: editCounter,
-    })
-
-    this.setState(({ todos }) => {
-      const i = this.findTodoIdx(id)
-      return this.changeKeyInTodos(i, todos, 'className', 'editing')
+      editedId: id,
     })
 
     // это чтобы пробелы удалялись
@@ -88,14 +84,10 @@ class App extends React.Component {
     })
   }
 
-  removeEditClass = (id) => {
+  removeEditClass = () => {
     this.setState({
       editing: 0,
-    })
-
-    this.setState(({ todos }) => {
-      const i = this.findTodoIdx(id)
-      return this.changeKeyInTodos(i, todos, 'className', null)
+      editedId: null,
     })
   }
 
@@ -140,37 +132,31 @@ class App extends React.Component {
   }
 
   render() {
-    const { todos, filter } = this.state
+    const { todos, filter, editedId, dontSubmit } = this.state
     const doneCount = todos.filter((el) => el.done).length
     const tasksLeft = todos.length - doneCount
 
     window.addEventListener('click', (e) => {
-      let newArr = []
-
       if (
-        (this.state.editing === 2 && !this.state.dontSubmit) ||
-        (!e.target.classList.contains('icon-edit') && !e.target.closest('.editing') && !this.state.dontSubmit)
+        this.state.editing === 1 &&
+        !e.target.classList.contains('icon-edit') &&
+        !e.target.closest('.editing') &&
+        !this.state.dontSubmit
       ) {
-        newArr = this.state.todos.map((todo) => {
-          if (todo.className === 'editing') {
-            todo.className = null
-          }
-          return todo
+        // сабмитим изменения
+        this.setState({
+          editedId: null,
+          dontSubmit: false,
+          editing: 0,
         })
       } else return
-
-      this.setState({
-        todos: newArr,
-        dontSubmit: false,
-        editing: 0,
-      })
     })
 
     return (
       <section className="todoapp">
         <header className="header">
           <h1>todos</h1>
-          <NewTaskForm onTaskAdded={this.addItem} unable={!this.state.dontSubmit} />
+          <NewTaskForm onTaskAdded={this.addItem} unable={!dontSubmit} />
         </header>
         <section className="main">
           <TaskList
@@ -181,6 +167,8 @@ class App extends React.Component {
             onToggleDone={this.onToggleDone}
             onEditing={this.editingItem}
             removeEditClass={this.removeEditClass}
+            editedId={editedId}
+            dontSubmit={dontSubmit}
           />
           <Footer left={tasksLeft} onFilter={this.onFilter} onDeleteCompleted={this.deleteCompleted} />
         </section>
