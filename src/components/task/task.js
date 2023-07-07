@@ -45,7 +45,7 @@ export default class Task extends React.Component {
 
     return (
       <div className="view" onClick={onToggleDone}>
-        <input className="toggle" type="checkbox" checked={checked} readOnly />
+        <input name="task" className="toggle" type="checkbox" checked={checked} readOnly />
         <label>
           <span className="description">{description}</span>
           <span className="created">{this.state.created}</span>

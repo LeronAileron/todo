@@ -6,47 +6,45 @@ import './task-filter.css'
 export default class TaskFilter extends React.Component {
   state = {
     buttons: [
-      { name: 'All', key: 1, className: 'selected' },
-      { name: 'Active', key: 2 },
-      { name: 'Completed', key: 3 },
+      { name: 'All', key: 0 },
+      { name: 'Active', key: 1 },
+      { name: 'Completed', key: 2 },
     ],
+    checked: 'All',
   }
 
   static propTypes = {
     onFilter: PropTypes.func.isRequired,
   }
 
-  onFilter = (key, name) => {
-    this.props.onFilter(name)
-
-    this.setState(({ buttons }) => {
-      const i = buttons.findIndex((button) => button.key === key)
-      const newArr = []
-      buttons.forEach((button, idx) => {
-        const oldButton = button
-        if (idx === i) {
-          const newItem = { ...oldButton, className: 'selected' }
-          newArr.push(newItem)
-        } else {
-          const newItem = { ...oldButton, className: null }
-          newArr.push(newItem)
-        }
-      })
-
-      return {
-        buttons: newArr,
-      }
+  changeChecked = (e) => {
+    this.setState({
+      checked: e.target.value,
     })
   }
 
   render() {
-    const { buttons } = this.state
+    const { buttons, checked } = this.state
+    const { onFilter } = this.props
+
     const elements = buttons.map((button) => (
-      <li key={button.key} onClick={() => this.onFilter(button.key, button.name)}>
-        <button className={button.className}>{button.name}</button>
-      </li>
+      <label
+        className={checked === button.name ? 'selected' : null}
+        key={button.key}
+        onClick={() => onFilter(button.name)}
+      >
+        <input
+          className="filters__input"
+          type="radio"
+          name="filter"
+          value={button.name}
+          checked={checked === button.name ? true : false}
+          onChange={this.changeChecked}
+        />
+        {button.name}
+      </label>
     ))
 
-    return <ul className="filters">{elements}</ul>
+    return <div className="filters">{elements}</div>
   }
 }

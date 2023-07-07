@@ -13,6 +13,7 @@ export default class NewTaskForm extends React.Component {
   }
 
   onChange = (e) => {
+    if (!this.props.unable) return
     this.setState({
       value: e.target.value,
     })
@@ -29,8 +30,9 @@ export default class NewTaskForm extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.onSubmit}>
+      <form name="new-todo-form" onSubmit={this.onSubmit}>
         <input
+          name="new-todo-input"
           className="new-todo"
           placeholder="What needs to be done?"
           autoFocus

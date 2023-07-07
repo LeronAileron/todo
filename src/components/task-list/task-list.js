@@ -21,6 +21,10 @@ export default class TaskList extends React.Component {
 
   onSubmit = (e, id) => {
     e.preventDefault()
+    const { todos } = this.props
+    const i = todos.findIndex((el) => el.id === id)
+    const editedItem = todos[i]
+    if (!editedItem.description.trim()) return
     this.props.removeEditClass(id)
   }
 
@@ -37,13 +41,10 @@ export default class TaskList extends React.Component {
       if (className === 'editing') {
         return (
           <li className={className} id={id} key={id}>
-            <Task
-              description={description}
-              created={created}
-              // createdInterval={false}
-            />
-            <form onSubmit={(e) => this.onSubmit(e, id)}>
+            <Task description={description} created={created} />
+            <form name="edit-task-form" onSubmit={(e) => this.onSubmit(e, id)}>
               <input
+                name="edit-task-input"
                 id="edit"
                 autoFocus
                 type="text"
@@ -65,7 +66,6 @@ export default class TaskList extends React.Component {
             onDelete={() => onDelete(id)}
             onEdit={() => onEdit(id)}
             onToggleDone={(e) => onToggleDone(id, e)}
-            // createdInterval={false}
           />
         </li>
       )
