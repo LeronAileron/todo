@@ -11,20 +11,34 @@ class App extends React.Component {
   maxId = 100
 
   state = {
-    // todos: [],
-    todos: [this.createTask('Drink cola'), this.createTask('Eat cheaps'), this.createTask('Complete React')],
+    todos: [],
     filter: 'All',
     editing: 0,
     dontSubmit: false,
+    dontCreate: false,
+    createdMin: '00',
+    createdSec: '00',
   }
 
-  createTask(description) {
+  createTask = (description) => {
+    const { createdMin, createdSec } = this.state
+
+    let minsEdited = this.validTime(createdMin)
+    if (!minsEdited) minsEdited = '00'
+
+    let secsEdited = this.validTime(createdSec)
+    if (!secsEdited) secsEdited = '00'
+
     const date = new Date()
+    const setInterval = `${minsEdited}:${secsEdited}`
     return {
       description,
       done: false,
       id: this.maxId++,
       created: date,
+      startTime: '',
+      interval: '',
+      intervalInMemory: setInterval,
     }
   }
 
@@ -93,12 +107,20 @@ class App extends React.Component {
 
   onToggleDone = (id, e) => {
     if (this.state.editing) return
-    if (e.target.classList.contains('icon-edit') || e.target.classList.contains('icon-destroy')) return
+    if (
+      e.target.classList.contains('icon-edit') ||
+      e.target.classList.contains('icon-destroy') ||
+      e.target.classList.contains('icon-play') ||
+      e.target.classList.contains('icon-pause')
+    )
+      return
     this.setState(({ todos }) => {
       const i = todos.findIndex((el) => el.id === id)
       const oldItem = todos[i]
       return this.changeKeyInTodos(i, todos, 'done', !oldItem.done)
     })
+
+    this.onPause(id)
   }
 
   onFilter = (name) => {
@@ -108,6 +130,8 @@ class App extends React.Component {
   addItem = (input) => {
     const newItem = this.createTask(input)
 
+    if (this.state.dontCreate) return
+
     this.setState(({ todos }) => {
       const newArr = [...todos, newItem]
 
@@ -115,6 +139,64 @@ class App extends React.Component {
         todos: newArr,
       }
     })
+
+    this.setState({
+      createdMin: 0,
+      createdSec: 0,
+    })
+  }
+
+  onPlay = (id) => {
+    this.setState(({ todos }) => {
+      const i = todos.findIndex((el) => el.id === id)
+      return this.changeKeyInTodos(i, todos, 'startTime', new Date())
+    })
+  }
+
+  updateInterval = (id, interval) => {
+    this.setState(({ todos }) => {
+      const i = todos.findIndex((el) => el.id === id)
+      return this.changeKeyInTodos(i, todos, 'interval', interval)
+    })
+  }
+
+  onPause = (id) => {
+    this.setState(({ todos }) => {
+      const i = todos.findIndex((el) => el.id === id)
+      const intervalToSet = todos[i].interval || todos[i].intervalInMemory
+      return this.changeKeyInTodos(i, todos, 'intervalInMemory', intervalToSet)
+    })
+
+    this.setState(({ todos }) => {
+      const i = todos.findIndex((el) => el.id === id)
+      return this.changeKeyInTodos(i, todos, 'startTime', '')
+    })
+  }
+
+  onChangeMin = (e) => {
+    const mins = e.target.value
+
+    this.setState({
+      createdMin: mins,
+    })
+  }
+
+  onChangeSec = (e) => {
+    const secs = e.target.value
+
+    this.setState({
+      createdSec: secs,
+    })
+  }
+
+  validTime = (time) => {
+    if (isNaN(time) || time > 59) return false
+
+    if (time.toString().length === 1) {
+      return `0${time}`
+    } else {
+      return time
+    }
   }
 
   findTodoIdx(id) {
@@ -156,7 +238,12 @@ class App extends React.Component {
       <section className="todoapp">
         <header className="header">
           <h1>todos</h1>
-          <NewTaskForm onTaskAdded={this.addItem} unable={!dontSubmit} />
+          <NewTaskForm
+            onTaskAdded={this.addItem}
+            unable={!dontSubmit}
+            onChangeMin={this.onChangeMin}
+            onChangeSec={this.onChangeSec}
+          />
         </header>
         <section className="main">
           <TaskList
@@ -169,6 +256,9 @@ class App extends React.Component {
             removeEditClass={this.removeEditClass}
             editedId={editedId}
             dontSubmit={dontSubmit}
+            onPlay={this.onPlay}
+            updateTodoInterval={this.updateInterval}
+            onPause={this.onPause}
           />
           <Footer left={tasksLeft} onFilter={this.onFilter} onDeleteCompleted={this.deleteCompleted} />
         </section>

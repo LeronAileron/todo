@@ -21,19 +21,16 @@ export default class TaskList extends React.Component {
 
   onSubmit = (e, id) => {
     e.preventDefault()
-    // const { todos } = this.props
-    // const i = todos.findIndex((el) => el.id === id)
-    // const editedItem = todos[i]
-    // if (!editedItem.description.trim()) return
     if (this.props.dontSubmit) return
     this.props.removeEditClass(id)
   }
 
   render() {
-    const { todos, onDelete, onEdit, onToggleDone, filter, onEditing, editedId } = this.props
+    const { todos, onDelete, onEdit, onToggleDone, filter, onEditing, editedId, onPlay, updateTodoInterval, onPause } =
+      this.props
 
     const elements = todos.map((todo) => {
-      let { id, done, description, created } = todo
+      let { id, done, description, created, startTime, interval, intervalInMemory } = todo
 
       if (editedId === id) {
         return (
@@ -55,7 +52,6 @@ export default class TaskList extends React.Component {
       }
 
       return (
-        // <li className={className} id={id} key={id}>
         <li className={done ? 'completed' : null} id={id} key={id}>
           <Task
             description={description}
@@ -64,6 +60,12 @@ export default class TaskList extends React.Component {
             onDelete={() => onDelete(id)}
             onEdit={() => onEdit(id)}
             onToggleDone={(e) => onToggleDone(id, e)}
+            onPlay={() => onPlay(id)}
+            startTime={startTime}
+            updateTodoInterval={(interval) => updateTodoInterval(id, interval)}
+            interval={interval}
+            onPause={() => onPause(id)}
+            intervalInMemory={intervalInMemory}
           />
         </li>
       )
