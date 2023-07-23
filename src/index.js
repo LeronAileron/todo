@@ -212,7 +212,13 @@ const App = () => {
     <section className="todoapp">
       <header className="header">
         <h1>todos</h1>
-        <NewTaskForm onTaskAdded={addItem} unable={!dontSubmit} onChangeMin={onChangeMin} onChangeSec={onChangeSec} />
+        <NewTaskForm
+          onTaskAdded={addItem}
+          unable={!dontSubmit}
+          onChangeMin={onChangeMin}
+          onChangeSec={onChangeSec}
+          editing={editing}
+        />
       </header>
       <section className="main">
         <TaskList

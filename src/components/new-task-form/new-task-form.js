@@ -3,26 +3,27 @@ import PropTypes from 'prop-types'
 
 import './new-task-form.css'
 
-const NewTaskForm = ({ unable, onChangeMin, onChangeSec, onTaskAdded }) => {
+const NewTaskForm = ({ unable, onChangeMin, onChangeSec, onTaskAdded, editing }) => {
   const [value, setValue] = useState('')
   const [min, setMin] = useState('')
   const [sec, setSec] = useState('')
 
   function onChangeTask(e) {
-    if (!unable) return
+    console.log(unable)
+    if (!unable || editing) return
 
     setValue(e.target.value)
   }
 
   function onMin(e) {
-    if (!unable) return
+    if (!unable || editing) return
     setMin(e.target.value)
 
     onChangeMin(e)
   }
 
   function onSec(e) {
-    if (!unable) return
+    if (!unable || editing) return
     setSec(e.target.value)
 
     onChangeSec(e)
