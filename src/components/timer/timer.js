@@ -1,38 +1,32 @@
-import React from 'react'
-// import { intervalToDuration, add } from 'date-fns'
+import React, { useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { intervalToDuration, sub } from 'date-fns'
 
-export default class Timer extends React.Component {
-  componentDidMount() {
-    this.updateInterval()
-  }
+const Timer = ({ startTime, updateTodoInterval, intervalInMemory, onPlay, onPause, done, interval }) => {
+  useEffect(() => {
+    updateInterval()
+  }, [])
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.startTime !== this.props.startTime || prevProps.interval !== this.props.interval) {
-      this.updateInterval()
-      this.timer = setTimeout(() => {
-        this.updateInterval()
-      }, 1000)
-    }
-  }
+  useEffect(() => {
+    updateInterval()
+    const timer = setTimeout(() => {
+      updateInterval()
+    }, 1000)
 
-  componentWillUnmount() {
-    clearTimeout(this.timer)
-  }
+    return () => clearTimeout(timer)
+  }, [startTime, interval])
 
-  updateInterval() {
-    const { startTime, updateTodoInterval, intervalInMemory } = this.props
-
+  function updateInterval() {
     if (!startTime) return
 
-    const startFromMemory = this.recountStartIfMemory(intervalInMemory, startTime)
+    const startFromMemory = recountStartIfMemory(intervalInMemory, startTime)
 
     let addedInterval = intervalToDuration({
       start: startFromMemory || startTime,
       end: new Date(),
     })
 
-    const convertedDuration = this.convertDuration(addedInterval)
+    const convertedDuration = convertDuration(addedInterval)
     let { hours, minutes, seconds } = convertedDuration
 
     const updatedInterval = hours ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`
@@ -40,22 +34,20 @@ export default class Timer extends React.Component {
     updateTodoInterval(updatedInterval)
   }
 
-  handlePlayClick = () => {
-    const { onPlay, startTime, done } = this.props
+  function handlePlayClick() {
     if (done) return
     if (!startTime) {
       onPlay()
     }
   }
 
-  handlePauseClick = () => {
-    const { onPause, startTime } = this.props
+  function handlePauseClick() {
     if (startTime) {
       onPause()
     }
   }
 
-  recountStartIfMemory(intervalInMemory, startTime) {
+  function recountStartIfMemory(intervalInMemory, startTime) {
     if (intervalInMemory !== '00:00') {
       let intervalInMemoryArr = intervalInMemory.split(':')
       let hours, minutes, seconds
@@ -79,7 +71,7 @@ export default class Timer extends React.Component {
     } else false
   }
 
-  convertDuration(obj) {
+  function convertDuration(obj) {
     const outputHours = obj.hours
     let hours
     if (outputHours) {
@@ -103,15 +95,23 @@ export default class Timer extends React.Component {
     }
   }
 
-  render() {
-    const { interval, intervalInMemory } = this.props
-
-    return (
-      <span className="description">
-        <button className="icon icon-play" onClick={this.handlePlayClick}></button>
-        <button className="icon icon-pause" onClick={this.handlePauseClick}></button>
-        <span className="description__interval">{interval || intervalInMemory}</span>
-      </span>
-    )
-  }
+  return (
+    <span className="description">
+      <button className="icon icon-play" onClick={handlePlayClick}></button>
+      <button className="icon icon-pause" onClick={handlePauseClick}></button>
+      <span className="description__interval">{interval || intervalInMemory}</span>
+    </span>
+  )
 }
+
+Timer.propTypes = {
+  startTime: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+  updateTodoInterval: PropTypes.func,
+  intervalInMemory: PropTypes.string,
+  onPlay: PropTypes.func,
+  onPause: PropTypes.func,
+  done: PropTypes.bool.isRequired,
+  interval: PropTypes.string,
+}
+
+export default Timer
